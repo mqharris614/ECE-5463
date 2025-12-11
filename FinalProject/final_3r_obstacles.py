@@ -188,6 +188,52 @@ def path_finding(grid: np.ndarray, start: list[int, int, int], end: list[int, in
     path, _ = dijkstra(grid, start_t, end_t)
     return path
 
+# CODE TO GET USER INPUT FOR OBSTACLES AND PICK / PLACE POSITIONS
+# Click order: wall1, wall2, obstacle, pick, place
+
+# find the center of a polygon
+def poly_center(poly):
+    sum_x = 0
+    sum_y = 0
+    for x, y in poly:
+        sum_x += x
+        sum_y += y
+    n = len(poly)
+    return (sum_x/n, sum_y/n)
+
+# translate the center of a polygon to a new center that the user picked
+def translate_to_new_center(poly, new_center):
+    cx, cy = poly_center(poly)
+    dx = new_center[0] - cx
+    dy = new_center[1] - cy
+
+    new_poly = []
+    for x, y in poly:
+        new_poly.append((x + dx, y + dy))
+    return new_poly
+
+# Open a figure and wait for the user to click 5 points
+fig_pick, ax_pick = plt.subplots()
+ax_pick.set_xlim(-maxRadius, maxRadius)
+ax_pick.set_ylim(-maxRadius, maxRadius)
+ax_pick.set_aspect('equal')
+ax_pick.set_title("Click 5 points: wall1 (big wall) wall2 (thin wall) obstacle (square)\nthen pick and place locations")
+
+pts = plt.ginput(5)
+plt.close(fig_pick)
+
+# Re-center obstacles around the clicked points
+wall1    = translate_to_new_center(wall1,    pts[0])
+wall2    = translate_to_new_center(wall2,    pts[1])
+obstacle = translate_to_new_center(obstacle, pts[2])
+
+# Update pick/place to the last 2 clicked locations
+pick  = [pts[3][0], pts[3][1]]
+place = [pts[4][0], pts[4][1]]
+
+#update the obstacles vector
+obstacles = [wall1, wall2, obstacle]
+
 valid_config_space, theta = generate_configuration_space(obstacles)
 
 # calucluate the theta positions of the home, pick, and place coordinates
