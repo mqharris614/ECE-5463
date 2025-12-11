@@ -188,6 +188,8 @@ def path_finding(grid: np.ndarray, start: list[int, int, int], end: list[int, in
     path, _ = dijkstra(grid, start_t, end_t)
     return path
 
+# This next section is written by Spencer Tamburello
+
 # CODE TO GET USER INPUT FOR OBSTACLES AND PICK / PLACE POSITIONS
 # Click order: wall1, wall2, obstacle, pick, place
 
