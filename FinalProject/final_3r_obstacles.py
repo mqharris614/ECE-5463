@@ -330,15 +330,14 @@ ax.add_patch(wall1_patch)
 ax.add_patch(wall2_patch)
 ax.add_patch(obstacle_patch)
 
-# --- LIVE THETA DISPLAY John Saa wrote this ---
-theta_text = ax.text(
-    0.02, 0.98, "",
-    transform=ax.transAxes,
-    va="top", ha="left",
-    fontsize=10,
-    bbox=dict(boxstyle="round", alpha=0.2)
+# --- LIVE THETA DISPLAY Code by John Saa ---
+theta_text = fig.text(
+    0.82, 0.75, "",   # (x, y) in figure coordinates
+    ha="left",
+    va="top",
+    fontsize=11,
+    bbox=dict(boxstyle="round", alpha=0.3)
 )
-
 
 # empty arrays to fill with link positions for animation
 joint1_x = []
@@ -401,6 +400,13 @@ def update(frame):
     l1_line.set_data([x_base, x_joint1], [y_base, y_joint1])
     l2_line.set_data([x_joint1, x_joint2], [y_joint1, y_joint2])
     l3_line.set_data([x_joint2, x_joint3], [y_joint2, y_joint3])
+
+    #code by john saa
+    theta_text.set_text(
+        f"θ1 = {math.degrees(full_theta1[frame]):.1f}°\n"
+        f"θ2 = {math.degrees(full_theta2[frame]):.1f}°\n"
+        f"θ3 = {math.degrees(full_theta3[frame]):.1f}°"
+    )
 
     return l1_line, l2_line, l3_line
 
