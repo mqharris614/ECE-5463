@@ -9,10 +9,11 @@ import matplotlib.animation as animation
 L1 = 0.75                    # length of first link
 L2 = 0.75                    # length of second link
 L3 = 0.75                    # length of third link
-RESOLUTION = 50
+RESOLUTION = 50              # number of indices for each dimension of the theta configuration space
 
 maxRadius = L1 + L2 + L3
 
+# hardcoded placeholder obstacle values for testing
 wall1 = [(-maxRadius, L1+0.2), (-maxRadius, maxRadius), (-0.5, maxRadius), (-0.5, L1+0.2)]
 wall2 = [(maxRadius, L1+0.2), (maxRadius, L1+0.3), (0.5, L1+0.3), (0.5, L1+0.2)]
 obstacle = [(-0.3, -0.3), (-0.3, -0.6), (-0.6, -0.6), (-0.6, -0.3)]
@@ -23,6 +24,7 @@ place = [-0.5, -1.0]
 
 obstacles = [wall1, wall2, obstacle]
 
+# helper function to return a boolean value of if a link in a specificed is within a small distance of an obstacle
 def obstacle_intersection(obstacle: list[tuple[float,float]], link: tuple[tuple[float,float],tuple[float,float]]):
     buffer = 0.15 # arbritarly tolterance calibrated through trial and error
     polygon = shapely.geometry.Polygon(obstacle)
@@ -34,16 +36,16 @@ def obstacle_intersection(obstacle: list[tuple[float,float]], link: tuple[tuple[
 def generate_configuration_space(obstacles: list[list[tuple[float,float]]], resolution: int  = RESOLUTION, lengths: list[float] = [L1,L2,L3]):
     """ Calculates the movement soace and obstacle space of the specific configuration
     
-    Create a matrix of size (resolution X resolution) where the x and y axes are the joints variables
+    Create a matrix of size (resolution X resolution x resolution) where the x, y and z axes are the joints variables
     and assigns a valid or invalid position value to that spot.
     Takes into account the length of the links and the obstacle space to determine if a given input
     of joint variables makes the links pass through any part of the obstacle
 
     Args:
+        obstacles ([tuples]): array of obstacles of tuple coordinates, creates the convex hull of all the coordinates in the list
         resolution (int): controls density of points to consider
         lengths (list[float]): lists the lengths of the links in the configuration
-        obstacles ([tuples]): array of obstacles of tuple coordinates, creates the convex hull of all the coordinates in the list
-
+        
     Returns:
         valid_config_space (matrix): matrix with valid position boolean values and associated joint variables
 
@@ -72,7 +74,7 @@ def generate_configuration_space(obstacles: list[list[tuple[float,float]]], reso
 
     return valid_config_space, theta
 
-
+# small helper function to convert from radian values to configuration space indices
 def to_index(theta1: float, theta2: float, theta3: float):
     theta1_index = math.floor(theta1/(2*math.pi)*RESOLUTION)
     theta2_index = math.floor(theta2/(2*math.pi)*RESOLUTION)
@@ -111,21 +113,21 @@ def inverse_kinematics(x, y, L1, L2, L3, valid_config_space: np.ndarray, thetas)
 def get_neighbors(pos, grid):
     neighbors = []
 
-    ########### use this chunk for all possible diagonals in the paths
-    # for dx, dy, dz in [
-    # (-1, -1, -1), (-1, -1,  0), (-1, -1,  1),
-    # (-1,  0, -1), (-1,  0,  0), (-1,  0,  1),
-    # (-1,  1, -1), (-1,  1,  0), (-1,  1,  1),
+    ########## uncomment this chunk for all possible diagonals in the paths
+    for dx, dy, dz in [
+    (-1, -1, -1), (-1, -1,  0), (-1, -1,  1),
+    (-1,  0, -1), (-1,  0,  0), (-1,  0,  1),
+    (-1,  1, -1), (-1,  1,  0), (-1,  1,  1),
 
-    # ( 0, -1, -1), ( 0, -1,  0), ( 0, -1,  1),
-    # ( 0,  0, -1),               ( 0,  0,  1),
-    # ( 0,  1, -1), ( 0,  1,  0), ( 0,  1,  1),
+    ( 0, -1, -1), ( 0, -1,  0), ( 0, -1,  1),
+    ( 0,  0, -1),               ( 0,  0,  1),
+    ( 0,  1, -1), ( 0,  1,  0), ( 0,  1,  1),
 
-    # ( 1, -1, -1), ( 1, -1,  0), ( 1, -1,  1),
-    # ( 1,  0, -1), ( 1,  0,  0), ( 1,  0,  1),
-    # ( 1,  1, -1), ( 1,  1,  0), ( 1,  1,  1)]:
+    ( 1, -1, -1), ( 1, -1,  0), ( 1, -1,  1),
+    ( 1,  0, -1), ( 1,  0,  0), ( 1,  0,  1),
+    ( 1,  1, -1), ( 1,  1,  0), ( 1,  1,  1)]:
 
-    ########### use this chunk to only move two joints at a time
+    ########### uncomment this chunk to only move two joints at a time
     # for dx, dy, dz in [
     #               (-1, -1,  0),
     # (-1,  0, -1), (-1,  0,  0), (-1,  0,  1),
@@ -139,9 +141,10 @@ def get_neighbors(pos, grid):
     # ( 1,  0, -1), ( 1,  0,  0), ( 1,  0,  1),
     #               ( 1,  1,  0)             ]:
 
-    ############### use this chunk for just moving in up, down, left, right, forward, back directions
-    for dx, dy, dz in [( -1, 0,  0), ( 1,  0, 0), ( 0, -1,  0), ( 0,  0, -1), ( 0,  0,  1), ( 0,  1,  0)]:
+    ############### uncomment this chunk for just moving in up, down, left, right, forward, back directions
+    # for dx, dy, dz in [( -1, 0,  0), ( 1,  0, 0), ( 0, -1,  0), ( 0,  0, -1), ( 0,  0,  1), ( 0,  1,  0)]:
 
+        # the modulus allows for wrapping of the configuration space
         nx, ny, nz = (pos[0] + dx)%RESOLUTION, (pos[1] + dy)%RESOLUTION, (pos[2] + dz)%RESOLUTION
         if grid[nx, ny, nz] != 1:
             neighbors.append((nx, ny, nz))
