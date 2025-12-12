@@ -106,7 +106,8 @@ def inverse_kinematics(x, y, L1, L2, L3, valid_config_space: np.ndarray, thetas)
 
     return 0.0, 0.0, 0.0
 
-# taken from guest lecture code
+# taken from guest lecture code ######################################################################
+# https://buckeyemailosu-my.sharepoint.com/personal/zia_23_osu_edu/_layouts/15/onedrive.aspx?id=%2Fpersonal%2Fzia%5F23%5Fosu%5Fedu%2FDocuments%2FMy%20Courses%2FECE5463%2F00%20ECE5463%20Au25%2FLectures%2Flecture%2018%2Ezip&parent=%2Fpersonal%2Fzia%5F23%5Fosu%5Fedu%2FDocuments%2FMy%20Courses%2FECE5463%2F00%20ECE5463%20Au25%2FLectures&ga=1
 # new fucntions that allows for wrapping around and moving diagonally
 def get_neighbors(pos, grid):
     neighbors = []
@@ -160,7 +161,6 @@ def reconstruct_path(came_from, start, goal):
     path.reverse()
     return path
 
-
 # Dijkstra's Algorithm modified to track visited cells
 def dijkstra(grid, start, goal):
     frontier = [(0, start)]
@@ -188,53 +188,7 @@ def path_finding(grid: np.ndarray, start: list[int, int, int], end: list[int, in
     path, _ = dijkstra(grid, start_t, end_t)
     return path
 
-# This next section is written by Spencer Tamburello
-
-# CODE TO GET USER INPUT FOR OBSTACLES AND PICK / PLACE POSITIONS
-# Click order: wall1, wall2, obstacle, pick, place
-
-# find the center of a polygon
-def poly_center(poly):
-    sum_x = 0
-    sum_y = 0
-    for x, y in poly:
-        sum_x += x
-        sum_y += y
-    n = len(poly)
-    return (sum_x/n, sum_y/n)
-
-# translate the center of a polygon to a new center that the user picked
-def translate_to_new_center(poly, new_center):
-    cx, cy = poly_center(poly)
-    dx = new_center[0] - cx
-    dy = new_center[1] - cy
-
-    new_poly = []
-    for x, y in poly:
-        new_poly.append((x + dx, y + dy))
-    return new_poly
-
-# Open a figure and wait for the user to click 5 points
-fig_pick, ax_pick = plt.subplots()
-ax_pick.set_xlim(-maxRadius, maxRadius)
-ax_pick.set_ylim(-maxRadius, maxRadius)
-ax_pick.set_aspect('equal')
-ax_pick.set_title("Click 5 points: wall1 (big wall) wall2 (thin wall) obstacle (square)\nthen pick and place locations")
-
-pts = plt.ginput(5)
-plt.close(fig_pick)
-
-# Re-center obstacles around the clicked points
-wall1    = translate_to_new_center(wall1,    pts[0])
-wall2    = translate_to_new_center(wall2,    pts[1])
-obstacle = translate_to_new_center(obstacle, pts[2])
-
-# Update pick/place to the last 2 clicked locations
-pick  = [pts[3][0], pts[3][1]]
-place = [pts[4][0], pts[4][1]]
-
-#update the obstacles vector
-obstacles = [wall1, wall2, obstacle]
+#################################################################################################################
 
 valid_config_space, theta = generate_configuration_space(obstacles)
 
@@ -330,15 +284,6 @@ ax.add_patch(wall1_patch)
 ax.add_patch(wall2_patch)
 ax.add_patch(obstacle_patch)
 
-# --- LIVE THETA DISPLAY Code by John Saa ---
-theta_text = fig.text(
-    0.82, 0.75, "",   # (x, y) in figure coordinates
-    ha="left",
-    va="top",
-    fontsize=11,
-    bbox=dict(boxstyle="round", alpha=0.3)
-)
-
 # empty arrays to fill with link positions for animation
 joint1_x = []
 joint1_y = []
@@ -400,13 +345,6 @@ def update(frame):
     l1_line.set_data([x_base, x_joint1], [y_base, y_joint1])
     l2_line.set_data([x_joint1, x_joint2], [y_joint1, y_joint2])
     l3_line.set_data([x_joint2, x_joint3], [y_joint2, y_joint3])
-
-    #code by john saa
-    theta_text.set_text(
-        f"θ1 = {math.degrees(full_theta1[frame]):.1f}°\n"
-        f"θ2 = {math.degrees(full_theta2[frame]):.1f}°\n"
-        f"θ3 = {math.degrees(full_theta3[frame]):.1f}°"
-    )
 
     return l1_line, l2_line, l3_line
 
