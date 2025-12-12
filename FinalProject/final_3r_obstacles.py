@@ -330,6 +330,16 @@ ax.add_patch(wall1_patch)
 ax.add_patch(wall2_patch)
 ax.add_patch(obstacle_patch)
 
+# --- LIVE THETA DISPLAY John Saa wrote this ---
+theta_text = ax.text(
+    0.02, 0.98, "",
+    transform=ax.transAxes,
+    va="top", ha="left",
+    fontsize=10,
+    bbox=dict(boxstyle="round", alpha=0.2)
+)
+
+
 # empty arrays to fill with link positions for animation
 joint1_x = []
 joint1_y = []
