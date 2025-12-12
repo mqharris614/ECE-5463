@@ -330,7 +330,7 @@ ax.add_patch(wall1_patch)
 ax.add_patch(wall2_patch)
 ax.add_patch(obstacle_patch)
 
-# --- LIVE THETA DISPLAY John Saa Code ---
+# --- LIVE THETA DISPLAY Code by John Saa ---
 theta_text = fig.text(
     0.82, 0.75, "",   # (x, y) in figure coordinates
     ha="left",
@@ -407,8 +407,6 @@ def update(frame):
         f"θ2 = {math.degrees(full_theta2[frame]):.1f}°\n"
         f"θ3 = {math.degrees(full_theta3[frame]):.1f}°"
     )
-
-    return l1_line, l2_line, l3_line
 
     return l1_line, l2_line, l3_line
 
