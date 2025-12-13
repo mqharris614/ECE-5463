@@ -318,6 +318,20 @@ full_theta1 = np.interp(t_new, t_orig, full_theta1)
 full_theta2 = np.interp(t_new, t_orig, full_theta2)
 full_theta3 = np.interp(t_new, t_orig, full_theta3)
 
+# Show joint theta angles in separate figure
+fig2, ax2 = plt.subplots()
+
+x = np.arange(len(full_theta1))
+
+ax2.plot(x, np.degrees(full_theta1), label="theta 1")
+ax2.plot(x, np.degrees(full_theta2), label="theta 2")
+ax2.plot(x, np.degrees(full_theta3), label="theta 3")
+
+ax2.set_title("Joint angles vs time")
+ax2.set_xlabel("time (frames)")
+ax2.set_ylabel("Angle (degrees)")
+ax2.legend()
+ax2.grid(True)
 
 ###### Animation section ###########
 fig , ax = plt.subplots()
